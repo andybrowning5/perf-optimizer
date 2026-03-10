@@ -81379,6 +81379,13 @@ var MessageReader = class {
     });
   }
 };
+function extractText(content) {
+  if (typeof content === "string") return content;
+  if (Array.isArray(content)) {
+    return content.filter((b) => b.type === "text").map((b) => b.text).join("\n");
+  }
+  return String(content);
+}
 function summarizeTool(name, input) {
   if (!input) return name;
   if (name === "read_file") return `read ${input.path || ""}`;
@@ -81428,7 +81435,7 @@ async function handleMessage(content, onActivity) {
         if (output?.messages?.length) {
           const last = output.messages[output.messages.length - 1];
           if (last.content) {
-            finalContent = typeof last.content === "string" ? last.content : JSON.stringify(last.content);
+            finalContent = extractText(last.content);
           }
         }
       }

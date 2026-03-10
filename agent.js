@@ -93,6 +93,19 @@ class MessageReader {
   }
 }
 
+// --- Content extraction ---
+
+function extractText(content) {
+  if (typeof content === "string") return content;
+  if (Array.isArray(content)) {
+    return content
+      .filter((b) => b.type === "text")
+      .map((b) => b.text)
+      .join("\n");
+  }
+  return String(content);
+}
+
 // --- Tool activity summarizer ---
 
 function summarizeTool(name, input) {
@@ -159,9 +172,7 @@ async function handleMessage(content, onActivity) {
         if (output?.messages?.length) {
           const last = output.messages[output.messages.length - 1];
           if (last.content) {
-            finalContent = typeof last.content === "string"
-              ? last.content
-              : JSON.stringify(last.content);
+            finalContent = extractText(last.content);
           }
         }
       }
