@@ -1,5 +1,5 @@
-name: perf-optimizer
-display_name: Coding Agent
+name: karpathy-performance-optimizer
+display_name: Karpathy Performance Optimizer
 version: 0.3.0
 description: >
   Karpathy-style iterative coding agent. Conversational — answers questions
