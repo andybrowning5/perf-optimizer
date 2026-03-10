@@ -1,12 +1,13 @@
 name: perf-optimizer
-display_name: Performance Optimizer
-version: 0.2.0
+display_name: Coding Agent
+version: 0.3.0
 description: >
-  Karpathy-style iterative performance optimizer. Conversational — answers
-  questions about your code. When asked to optimize, loops autonomously:
-  edit → test → keep/revert → report → next. Streams tool uses in real-time.
+  Karpathy-style iterative coding agent. Conversational — answers questions
+  about your code. When given a task (optimize, fix bugs, refactor, add features),
+  loops autonomously: edit → test → keep/revert → report → next. Works with any
+  language — auto-detects test runner and build system. Streams tool uses in real-time.
 category: coding
-tags: [performance, optimization, autonomous, testing]
+tags: [coding, autonomous, testing, performance, refactoring, bugfix]
 author:
   name: Andy Browning
   github: andybrowning5

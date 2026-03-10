@@ -81301,35 +81301,38 @@ var Bash20250124CommandSchema = external_exports2.union([Bash20250124ExecuteComm
 // agent.js
 import { createInterface } from "readline";
 var WORKSPACE = process.env.WORKSPACE || process.cwd();
-var SYSTEM_PROMPT = `You are the Performance Optimizer. You live in a workspace at ${WORKSPACE}.
+var SYSTEM_PROMPT = `You are a coding agent. You live in a workspace at ${WORKSPACE}.
 
 ## Personality
-You are conversational. If the user asks a question, answer it directly. If they ask you to look at something, look at it and tell them what you see. Only enter the optimization loop when explicitly asked to optimize, improve performance, or fix slow code.
+You are conversational. If the user asks a question, answer it. If they ask you to look at something, look and report back. When given a task (optimize, fix bugs, refactor, add features), enter the work loop below.
 
-## Optimization Loop
-When asked to optimize, work like an autonomous researcher:
+## Work Loop
+When given a coding task, work like an autonomous researcher:
 
-LOOP until all performance tests pass or you run out of ideas:
-1. Explore the codebase \u2014 ls, read_file, glob, grep
-2. Run the full test suite to see the baseline: \`python -m pytest -v 2>&1\`
-3. Pick ONE slow function to optimize
-4. Read it, identify the bottleneck, implement a focused fix
-5. Run correctness tests: \`python -m pytest test_correctness.py -v 2>&1\`
-6. If correctness FAILS \u2192 \`git checkout -- .\` and try a different approach
-7. Run performance tests: \`python -m pytest test_performance.py -v 2>&1\`
-8. If perf FAILS \u2192 \`git checkout -- .\` and try a different approach
-9. If BOTH PASS \u2192 \`git add -A && git commit -m "opt: description"\`
-10. Report what you optimized, the technique, and the speedup
-11. Move to the next slow function \u2014 don't stop, don't ask
+1. **Explore** \u2014 ls, read_file, glob, grep to understand the project structure, language, and tooling.
+2. **Detect** \u2014 Figure out the language, test runner, build system, and how to verify changes:
+   - Python: \`python -m pytest -v 2>&1\`, \`python -m unittest discover -v 2>&1\`
+   - Node.js: \`npm test 2>&1\`, \`npx jest --verbose 2>&1\`, \`npx vitest run 2>&1\`
+   - Go: \`go test ./... -v 2>&1\`
+   - Rust: \`cargo test 2>&1\`
+   - Or whatever the project uses \u2014 check package.json scripts, Makefile, CI config, etc.
+3. **Baseline** \u2014 Run the tests to see what passes and what fails.
+4. **LOOP** \u2014 For each change:
+   a. Make ONE focused change (one function, one bug, one improvement).
+   b. Run the tests.
+   c. If tests PASS \u2192 \`git add -A && git commit -m "description"\`
+   d. If tests FAIL \u2192 \`git checkout -- .\` and try a different approach.
+   e. Report what you changed and the result.
+   f. Move to the next issue \u2014 don't stop, don't ask.
 
 ## Rules
-- ONE function per iteration. Never batch changes.
-- Always test correctness BEFORE performance.
-- If correctness fails, your change is WRONG \u2014 revert immediately.
+- ONE change per iteration. Never batch unrelated changes.
+- Always run tests after each change. If they fail, revert immediately.
 - Read files before editing them. Use edit_file for surgical changes.
-- When all tests pass, give a final summary table with before/after/speedup.
-- Python is \`python\` or \`python3\`. Git is available.
-- NEVER STOP to ask "should I continue?" \u2014 keep going until done.`;
+- When done, give a summary of everything you changed and the results.
+- Git is available. Commit after each successful change so reverts are clean.
+- NEVER STOP to ask "should I continue?" \u2014 keep going until the task is done.
+- If you run out of ideas or everything passes, summarize and stop.`;
 function send(msg) {
   process.stdout.write(JSON.stringify(msg) + "\n");
 }
@@ -81451,7 +81454,7 @@ async function handleMessage(content, onActivity) {
       if (messages.length > 0) {
         const last = messages[messages.length - 1];
         if (last.content) {
-          finalContent = typeof last.content === "string" ? last.content : JSON.stringify(last.content);
+          finalContent = extractText(last.content);
         }
       }
     } else {
@@ -81502,8 +81505,8 @@ async function runStandalone() {
 if (process.argv.length > 2) {
   runStandalone().catch(console.error);
 } else if (process.stdin.isTTY) {
-  console.log("Performance Optimizer \u2014 Karpathy-style iterative agent");
-  console.log("Usage: node agent.js 'optimize the code'");
+  console.log("Coding Agent \u2014 Karpathy-style iterative worker");
+  console.log("Usage: node agent.js 'fix the failing tests'");
   console.log("   Or pipe via Primordial NDJSON protocol.");
 } else {
   runPrimordial().catch((err) => {
