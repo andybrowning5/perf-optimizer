@@ -2,10 +2,9 @@ name: karpathy-performance-optimizer
 display_name: Karpathy Performance Optimizer
 version: 0.3.0
 description: >
-  Karpathy-style iterative coding agent. Conversational — answers questions
-  about your code. When given a task (optimize, fix bugs, refactor, add features),
-  loops autonomously: edit -> test -> keep/revert -> report -> next. Works with any
-  language — auto-detects test runner and build system. Streams tool uses in real-time.
+  Coding agent inspired by Andrej Karpathy's autonomous research loop.
+  Given a task, iterates autonomously: edit, test, keep or revert, next —
+  until done. Auto-detects language, test runner, and build system.
 category: coding
 tags: [coding, autonomous, testing, performance, refactoring, bugfix]
 author:
